@@ -13,16 +13,15 @@ import com.example.app.repository.CustomerRepository;
 import com.example.app.util.ExcelUtils;
 
 @Service
-public class FileServices {
+public class ExcelServices {
 
 	@Autowired
 	CustomerRepository customerRepository;
 	
 	// Store File Data to Database
-	public void store(MultipartFile file) {
+	public void save(MultipartFile file) {
 		try {
 			List<Customer> customers = ExcelUtils.parseExcelFile(file.getInputStream());
-			// Save Customers to DataBase
 			customerRepository.saveAll(customers);
 		} catch (IOException e) {
 			throw new RuntimeException("Fail! -> message = " + e.getMessage());
@@ -30,15 +29,24 @@ public class FileServices {
 	}
 	
 	// Load Data to Excel File
-	public ByteArrayInputStream loadFile() {
-		List<Customer> customers = customerRepository.findAll();
-		
+	public ByteArrayInputStream load() {		
 		try {
+			List<Customer> customers = customerRepository.findAll();
 			ByteArrayInputStream in = ExcelUtils.customersToExcel(customers);
 			return in;
 			
 		} catch (IOException e) {
-			return null;
+			throw new RuntimeException("Fail! -> message = " + e.getMessage());
+		}
+	}
+	
+	// Retrieve data from database
+	public List<Customer> getAllCustomers() {
+		try {
+			return customerRepository.findAll();
+			
+		} catch (Exception e) {
+			throw new RuntimeException("Fail! -> message = " + e.getMessage());
 		}
 	}
 }
