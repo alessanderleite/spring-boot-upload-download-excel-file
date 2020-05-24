@@ -17,20 +17,30 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.app.model.Customer;
 
 public class ExcelUtils {
+	public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	static String[] COLUMNs = {"Id", "Name", "Address", "Age"};
+	static String SHEET = "Customers";
+	
+	public static boolean hasExcelFormat(MultipartFile file) {
+		
+		if (TYPE.equals(file.getContentType())) {
+			return false;
+		}
+		
+		return true;
+	}
 
 	public static ByteArrayInputStream customersToExcel(List<Customer> customers) throws IOException {
-		String[] COLUMNs = {"Id", "Name", "Address", "Age"};
-		try(
-				Workbook workbook = new XSSFWorkbook();
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-		){
+		
+		try(Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream();){
 			CreationHelper createHelper = workbook.getCreationHelper();
 	 
-			Sheet sheet = workbook.createSheet("Customers");
+			Sheet sheet = workbook.createSheet(SHEET);
 	 
 			Font headerFont = workbook.createFont();
 			headerFont.setBold(true);
@@ -75,7 +85,7 @@ public class ExcelUtils {
 		try {
     		Workbook workbook = new XSSFWorkbook(is);
      
-    		Sheet sheet = workbook.getSheet("Customers");
+    		Sheet sheet = workbook.getSheet(SHEET);
     		Iterator<Row> rows = sheet.iterator();
     		
     		List<Customer> lstCustomers = new ArrayList<Customer>();
