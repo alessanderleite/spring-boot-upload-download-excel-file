@@ -13,7 +13,7 @@ import com.example.app.repository.CustomerRepository;
 import com.example.app.util.ExcelUtils;
 
 @Service
-public class ExcelServices {
+public class ExcelService {
 
 	@Autowired
 	CustomerRepository customerRepository;
