@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.app.model.Customer;
+import com.example.app.response.ResponseMessage;
 import com.example.app.service.ExcelService;
+import com.example.app.util.ExcelUtils;
 
 @RestController
 @RequestMapping("/api/excel")
@@ -28,16 +30,22 @@ public class ExcelController {
 	 * Upload Files
 	 */
 	@PostMapping("/upload")
-	public String uploadMultipartFile(@RequestParam("file") MultipartFile file) {
+	public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
 		String message = "";
-		try {
-			excelService.save(file);
-			message = "Upload the file successfully: " + file.getOriginalFilename();
-			return message;
-		} catch (Exception e) {
-			message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-			return message;
+		
+		if (ExcelUtils.hasExcelFormat(file)) {			
+			try {
+				excelService.save(file);
+				message = "Upload the file successfully: " + file.getOriginalFilename();
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+			} catch (Exception e) {
+				message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+				return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+			}
 		}
+		
+		message = "Please upload an excel file!";
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(message));
 	}
 	
 	/*
