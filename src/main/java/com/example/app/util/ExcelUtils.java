@@ -28,7 +28,7 @@ public class ExcelUtils {
 	
 	public static boolean hasExcelFormat(MultipartFile file) {
 		
-		if (TYPE.equals(file.getContentType())) {
+		if (!TYPE.equals(file.getContentType())) {
 			return false;
 		}
 		
